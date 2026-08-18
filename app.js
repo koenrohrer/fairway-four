@@ -14,31 +14,8 @@ const DEFAULT_PLAYERS = {
   D: ['Rowan', 'Emery', 'Skyler', 'Charlie', 'Dakota'],
 };
 
-// Each row is a foursome. The numbers are rank positions inside A, B, C, D.
-// The pattern is a Latin-style rotation: it balances strength and never repeats a pair.
-const ROTATION_PATTERNS = [
-  [
-    [0, 0, 4, 4],
-    [1, 4, 1, 2],
-    [2, 3, 3, 0],
-    [3, 2, 0, 3],
-    [4, 1, 2, 1],
-  ],
-  [
-    [0, 3, 2, 3],
-    [1, 2, 4, 1],
-    [2, 1, 1, 4],
-    [3, 0, 3, 2],
-    [4, 4, 0, 0],
-  ],
-  [
-    [0, 4, 3, 1],
-    [1, 3, 0, 4],
-    [2, 2, 2, 2],
-    [3, 1, 4, 0],
-    [4, 0, 1, 3],
-  ],
-];
+const RANKS = [0, 1, 2, 3, 4];
+let rotationPatterns;
 
 const DAY_NAMES = ['Friday foursomes', 'Saturday foursomes', 'Sunday foursomes'];
 const STORAGE_KEY = 'fairway-four-roster-v1';
@@ -208,12 +185,96 @@ function reorderPlayer(group, fromIndex, toIndex) {
   showToast(`${movedPlayer.name || 'Player'} is now ranked ${toIndex + 1} in Group ${group}.`);
 }
 
+function shuffle(values) {
+  const copy = [...values];
+  for (let index = copy.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [copy[index], copy[swapIndex]] = [copy[swapIndex], copy[index]];
+  }
+  return copy;
+}
+
+function getPermutations(values) {
+  if (values.length <= 1) return [values];
+  const permutations = [];
+  values.forEach((value, index) => {
+    const remainder = [...values.slice(0, index), ...values.slice(index + 1)];
+    getPermutations(remainder).forEach((permutation) => permutations.push([value, ...permutation]));
+  });
+  return permutations;
+}
+
+function createBalancedDayVariants() {
+  const variants = [];
+  const permutations = getPermutations(RANKS);
+
+  permutations.forEach((groupB) => {
+    permutations.forEach((groupC) => {
+      const groupD = RANKS.map((rank, teamIndex) => 8 - rank - groupB[teamIndex] - groupC[teamIndex]);
+      if (!groupD.every((rank) => RANKS.includes(rank)) || new Set(groupD).size !== 5) return;
+      variants.push(RANKS.map((rank, teamIndex) => [rank, groupB[teamIndex], groupC[teamIndex], groupD[teamIndex]]));
+    });
+  });
+
+  return variants;
+}
+
+function getPairKeys(day) {
+  const pairs = [];
+  day.forEach((team) => {
+    for (let leftGroup = 0; leftGroup < team.length; leftGroup += 1) {
+      for (let rightGroup = leftGroup + 1; rightGroup < team.length; rightGroup += 1) {
+        pairs.push(`${leftGroup}:${team[leftGroup]}|${rightGroup}:${team[rightGroup]}`);
+      }
+    }
+  });
+  return pairs;
+}
+
+function buildRandomRotation() {
+  const variants = createBalancedDayVariants();
+
+  function search(dayIndex, usedPairs, days) {
+    if (dayIndex === 3) return days;
+
+    const candidates = shuffle(variants).filter((candidate) => {
+      const candidatePairs = getPairKeys(candidate);
+      return candidatePairs.every((pair) => !usedPairs.has(pair));
+    });
+
+    for (const candidate of candidates) {
+      const nextPairs = new Set(usedPairs);
+      getPairKeys(candidate).forEach((pair) => nextPairs.add(pair));
+      const result = search(dayIndex + 1, nextPairs, [...days, shuffle(candidate).map((team) => [...team])]);
+      if (result) return result;
+    }
+
+    return null;
+  }
+
+  const rotation = search(0, new Set(), []);
+  if (!rotation) throw new Error('Unable to create a balanced three-day rotation');
+  return rotation;
+}
+
+function rotationSignature(rotation) {
+  return rotation.flatMap(getPairKeys).sort().join(';');
+}
+
+function buildNewRotation() {
+  let nextRotation = buildRandomRotation();
+  while (rotationPatterns && rotationSignature(nextRotation) === rotationSignature(rotationPatterns)) {
+    nextRotation = buildRandomRotation();
+  }
+  return nextRotation;
+}
+
 function getScore(groupIndex, rankIndex) {
   return 20 - groupIndex * 5 - rankIndex;
 }
 
 function buildTeams(dayIndex) {
-  return ROTATION_PATTERNS[dayIndex].map((teamPattern) =>
+  return rotationPatterns[dayIndex].map((teamPattern) =>
     teamPattern.map((rankIndex, groupIndex) => ({
       group: GROUPS[groupIndex],
       name: roster[GROUPS[groupIndex]][rankIndex].name.trim() || `${GROUPS[groupIndex]}${rankIndex + 1}`,
@@ -433,12 +494,13 @@ document.querySelectorAll('.day-tab').forEach((tab) => {
 });
 
 document.querySelector('#generate-button').addEventListener('click', () => {
+  rotationPatterns = buildNewRotation();
   setDay(0);
   document.querySelector('#results-title').scrollIntoView({
     behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
     block: 'start',
   });
-  showToast('Three balanced days generated. Every teammate pairing is fresh.');
+  showToast('New three-day rotation generated. Every teammate pairing is fresh.');
 });
 
 document.querySelector('#reset-button').addEventListener('click', () => {
@@ -449,5 +511,6 @@ document.querySelector('#reset-button').addEventListener('click', () => {
   showToast('Roster reset to the starter lineup.');
 });
 
+rotationPatterns = buildRandomRotation();
 renderRoster();
 renderTeams();
