@@ -8,6 +8,13 @@ const GROUP_META = {
 };
 
 const DEFAULT_PLAYERS = {
+  A: ['Troy', 'Paul', 'Jay', 'Kevin', 'Brock'],
+  B: ['Bud', 'Rick', 'Brad', 'Peyton', 'Owen'],
+  C: ['Todd', 'Bennie', 'Donnie', 'Joey', 'Jeremy'],
+  D: ['David', 'Jason', 'Kade', 'William', 'Ray'],
+};
+
+const LEGACY_DEFAULT_PLAYERS = {
   A: ['Morgan', 'Casey', 'Jordan', 'Riley', 'Taylor'],
   B: ['Avery', 'Jamie', 'Drew', 'Cameron', 'Finley'],
   C: ['Parker', 'Reese', 'Quinn', 'Blake', 'Sage'],
@@ -46,6 +53,12 @@ function cloneDefaultRoster() {
   return Object.fromEntries(GROUPS.map((group) => [group, DEFAULT_PLAYERS[group].map((name) => ({ name }))]));
 }
 
+function rosterMatchesNames(candidate, expected) {
+  return GROUPS.every(
+    (group) => candidate[group].map((player) => player.name).join('\u0000') === expected[group].join('\u0000'),
+  );
+}
+
 function loadRoster() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
@@ -58,6 +71,7 @@ function loadRoster() {
           saved[group].every((player) => player && typeof player.name === 'string'),
       )
     ) {
+      if (rosterMatchesNames(saved, LEGACY_DEFAULT_PLAYERS)) return cloneDefaultRoster();
       return saved;
     }
   } catch {
