@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A precision pairing desk for building balanced three-day golf rotations."
+    />
+    <title>Fairway Four — Pairings desk</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <div class="grain" aria-hidden="true"></div>
+    <div class="backdrop-line backdrop-line-one" aria-hidden="true"></div>
+    <div class="backdrop-line backdrop-line-two" aria-hidden="true"></div>
+
+    <div class="app-shell">
+      <header class="site-header">
+        <a class="brand" href="#top" aria-label="Fairway Four pairings desk home">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 42 42" role="img">
+              <circle cx="21" cy="21" r="18" class="mark-ring" />
+              <path d="M21 32V10" class="mark-pole" />
+              <path d="M21 10h11l-6 6 6 6H21" class="mark-flag" />
+              <path d="M13 32h16" class="mark-ground" />
+            </svg>
+          </span>
+          <span class="brand-lockup">
+            <span class="brand-name">Fairway Four</span>
+            <span class="brand-caption">tour pairings office</span>
+          </span>
+        </a>
+
+        <nav class="site-nav" aria-label="Primary navigation">
+          <a class="nav-link is-active" href="#builder">Pairings desk</a>
+          <a class="nav-link" href="#method">How it works</a>
+        </nav>
+
+        <div class="header-console">
+          <div class="header-round">
+            <span class="header-label">Rotation</span>
+            <strong>03 <span>/ 03</span></strong>
+          </div>
+          <span class="header-divider" aria-hidden="true"></span>
+          <span class="live-status"><span class="status-dot"></span> Local field</span>
+        </div>
+      </header>
+
+      <main id="top">
+        <section class="hero" aria-labelledby="page-title">
+          <div class="hero-copy">
+            <p class="eyebrow"><span class="eyebrow-mark">✦</span> Pairings desk <span>/</span> 2025 club edition</p>
+            <h1 id="page-title">Build the <em>right</em> foursome.</h1>
+            <p class="hero-intro">
+              The quiet advantage is in the card. Set the field, protect the balance, and send every player into a fresh three-day rotation.
+            </p>
+            <div class="hero-actions">
+              <button class="button button-primary" id="generate-button" type="button">
+                <span class="button-icon" aria-hidden="true">↗</span>
+                Publish rotation
+              </button>
+              <button class="button button-quiet" id="reset-button" type="button">Reset field</button>
+            </div>
+            <div class="hero-proof" aria-label="Rotation properties">
+              <span><b>20</b> players</span>
+              <span><b>05</b> foursomes</span>
+              <span><b>03</b> rounds</span>
+            </div>
+          </div>
+
+          <div class="tour-console" aria-label="Pairings desk summary">
+            <div class="console-topline">
+              <span><span class="console-live-dot"></span> Pairing matrix</span>
+              <span class="console-code">FF / 003</span>
+            </div>
+            <div class="console-main">
+              <div class="console-score">
+                <span class="console-label">Ideal team strength</span>
+                <strong>42</strong>
+                <span class="console-score-note">Every card. Every day.</span>
+              </div>
+              <div class="putt-stage">
+                <div class="putt-stage-topline">
+                  <span>Practice green</span>
+                  <button class="putt-reset" id="putt-reset" type="button" aria-label="Reset practice putt">↻</button>
+                </div>
+                <div class="putt-course" id="putt-course" role="group" tabindex="0" aria-label="Mini putting green" aria-describedby="putt-instruction">
+                  <span class="putt-fringe"></span>
+                  <span class="putt-slope slope-one"></span>
+                  <span class="putt-slope slope-two"></span>
+                  <span class="putt-guide" id="putt-guide"></span>
+                  <span class="putt-trail" id="putt-trail"></span>
+                  <span class="putt-cup" id="putt-cup"><span></span></span>
+                  <span class="putt-flag" aria-hidden="true"><span></span></span>
+                  <span class="putt-ball" id="putt-ball"></span>
+                  <span class="putt-drag-hint" id="putt-drag-hint">Pull back + release</span>
+                </div>
+                <div class="putt-stage-footer">
+                  <span id="putt-status">Ready on the tee</span>
+                  <span class="putt-power"><small>Power</small><i id="putt-power-bar"></i></span>
+                </div>
+                <p class="putt-instruction" id="putt-instruction">Drag from the ball to draw your putt.</p>
+              </div>
+            </div>
+            <div class="console-bottomline">
+              <span><b>90</b> unique pairings</span>
+              <span><b>0</b> repeats</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="builder-layout" id="builder" aria-label="Roster and team builder">
+          <aside class="field-panel" aria-labelledby="field-title">
+            <div class="panel-topline">
+              <div>
+                <p class="section-kicker">Field / 01</p>
+                <h2 id="field-title">Order the field</h2>
+              </div>
+              <span class="panel-state"><span>●</span> Editing</span>
+            </div>
+            <p class="section-description">
+              Name the players and rank each group from strongest to newest. Drag a card or use the arrows to move a player.
+            </p>
+            <div class="field-rule"><span></span> Rank 01 carries the most weight <span></span></div>
+            <div id="roster-grid" class="roster-grid"></div>
+            <div class="field-footer">
+              <span class="footer-mark" aria-hidden="true">↕</span>
+              <span>Changes save automatically<br /><b>on this device</b></span>
+              <span class="footer-arrow" aria-hidden="true">↗</span>
+            </div>
+          </aside>
+
+          <section class="rotation-panel" aria-labelledby="results-title">
+            <div class="rotation-header">
+              <div>
+                <p class="section-kicker">Rotation / 02</p>
+                <h2 id="results-title">The tour card</h2>
+              </div>
+              <div class="rotation-status">
+                <span class="status-seal">✓</span>
+                <span><b>Clean card</b><small>all pairings checked</small></span>
+              </div>
+            </div>
+
+            <div class="day-tabs" role="tablist" aria-label="Choose a golf day">
+              <button class="day-tab is-active" type="button" role="tab" aria-selected="true" data-day="0">
+                <span class="day-number">01</span><span class="day-copy"><b>Friday</b><small>Opening round</small></span><span class="day-arrow">↗</span>
+              </button>
+              <button class="day-tab" type="button" role="tab" aria-selected="false" data-day="1">
+                <span class="day-number">02</span><span class="day-copy"><b>Saturday</b><small>Moving day</small></span><span class="day-arrow">↗</span>
+              </button>
+              <button class="day-tab" type="button" role="tab" aria-selected="false" data-day="2">
+                <span class="day-number">03</span><span class="day-copy"><b>Sunday</b><small>Final round</small></span><span class="day-arrow">↗</span>
+              </button>
+            </div>
+
+            <div class="results-meta">
+              <div>
+                <span class="meta-label">Course plan</span>
+                <strong id="day-title">Friday foursomes</strong>
+              </div>
+              <div class="target-score">
+                <span class="meta-label">Target team score</span>
+                <strong><span id="target-score">42</span> <small>/ 42</small></strong>
+              </div>
+            </div>
+
+            <div id="team-grid" class="team-grid" aria-live="polite"></div>
+
+            <div class="fairness-footer">
+              <div class="fairness-mark">✓</div>
+              <div>
+                <strong>Every player gets a fresh partner set.</strong>
+                <span>90 teammate pairings checked · no repeats across the rotation</span>
+              </div>
+              <span class="fairness-arrow" aria-hidden="true">↗</span>
+            </div>
+          </section>
+        </section>
+
+        <section class="method-section" id="method" aria-labelledby="method-title">
+          <div class="method-heading">
+            <p class="section-kicker">Rotation / 03</p>
+            <h2 id="method-title">A fair card<br /><em>reads itself.</em></h2>
+          </div>
+          <div class="method-grid">
+            <article class="method-item">
+              <span class="method-index">01</span>
+              <span class="method-icon icon-balance">≋</span>
+              <div><strong>Equal weight</strong><span>Every foursome lands on the same 42-point mark.</span></div>
+            </article>
+            <article class="method-item">
+              <span class="method-index">02</span>
+              <span class="method-icon icon-rotation">↻</span>
+              <div><strong>Fresh company</strong><span>No player shares a teammate twice.</span></div>
+            </article>
+            <article class="method-item">
+              <span class="method-index">03</span>
+              <span class="method-icon icon-saved">⌁</span>
+              <div><strong>Operator ready</strong><span>Your roster saves locally, ready for the next card.</span></div>
+            </article>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <span>FAIRWAY FOUR / TOUR PAIRINGS OFFICE</span>
+        <span>Made for the walk from the first tee.</span>
+      </footer>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
