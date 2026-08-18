@@ -257,16 +257,25 @@ function buildRandomRotation() {
   return rotation;
 }
 
-function rotationSignature(rotation) {
-  return rotation.flatMap(getPairKeys).sort().join(';');
+function getTeamKeys(day) {
+  return day.map((team) => team
+    .map((rankIndex, groupIndex) => `${groupIndex}:${rankIndex}`)
+    .sort()
+    .join('|'));
 }
 
 function buildNewRotation() {
-  let nextRotation = buildRandomRotation();
-  while (rotationPatterns && rotationSignature(nextRotation) === rotationSignature(rotationPatterns)) {
-    nextRotation = buildRandomRotation();
+  for (let attempt = 0; attempt < 200; attempt += 1) {
+    const nextRotation = buildRandomRotation();
+    if (!rotationPatterns || nextRotation.every((day, dayIndex) => {
+      const previousTeams = new Set(getTeamKeys(rotationPatterns[dayIndex]));
+      return getTeamKeys(day).every((team) => !previousTeams.has(team));
+    })) {
+      return nextRotation;
+    }
   }
-  return nextRotation;
+
+  throw new Error('Unable to create a fresh three-day rotation');
 }
 
 function getScore(groupIndex, rankIndex) {
